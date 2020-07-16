@@ -40,3 +40,11 @@ http_port_t                    tcp      8888, 80, 81, 443, 488, 8008, 8009, 8443
 Перезапустил nginx и проверил
 
 ![4](screenshots/4.png)
+
+**3 способ решить задачу**
+
+Формирование и установка модуля SELinux
+
+> semanage port -d -t http_port_t -p tcp 8888
+
+![5](screenshots/5.png)

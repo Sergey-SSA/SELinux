@@ -74,7 +74,7 @@ ___
 ## Задача 2
 
 **Обеспечить работоспособность приложения при включенном selinux**
-На [стенде] (https://github.com/mbfx/otus-linux-adm/blob/master/selinux_dns_problems/) выяснить причину неработоспособности механизма обновления зоны.
+На стенде https://github.com/mbfx/otus-linux-adm/blob/master/selinux_dns_problems/ выяснить причину неработоспособности механизма обновления зоны.
 
 С клиента попытался выполнить обновление зоны ddns.lab
 

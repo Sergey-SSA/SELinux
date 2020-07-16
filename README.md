@@ -74,3 +74,9 @@ ___
 ## Задача 2
 
 **Обеспечить работоспособность приложения при включенном selinux**
+На [стенде] (https://github.com/mbfx/otus-linux-adm/blob/master/selinux_dns_problems/) выяснить причину неработоспособности механизма обновления зоны.
+
+С клиента попытался выполнить обновление зоны ddns.lab
+
+>[vagrant@client ~]$ nsupdate -k /etc/named.zonetransfer.key
+

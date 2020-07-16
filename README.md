@@ -45,6 +45,28 @@ http_port_t                    tcp      8888, 80, 81, 443, 488, 8008, 8009, 8443
 
 Формирование и установка модуля SELinux
 
+Сначала удалил порт из разрешённых и перезапустил nginx
+
 > semanage port -d -t http_port_t -p tcp 8888
 
 ![5](screenshots/5.png)
+
+Для формирования и установки модуля SELinux использовал утилиту audit2allow, перенаправив на её stdin лог SELinux:
+
+```
+[root@selinuxaudit2allow -M my_nginx_service < /var/log/audit/audit.log
+******************** IMPORTANT ***********************
+To make this policy package active, execute:
+
+semodule -i my_nginx_service.pp
+```
+
+В результате создан модуль `my_nginx_service.pp`, который установил следующим образом:
+
+>[root@selinux ~]# semodule -i my_nginx_service.pp
+
+Перезапустил nginx и проверил
+
+![6](screenshots/6.png)
+
+11

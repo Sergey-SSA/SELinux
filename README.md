@@ -51,7 +51,7 @@ http_port_t                    tcp      8888, 80, 81, 443, 488, 8008, 8009, 8443
 
 ![5](screenshots/5.png)
 
-Для формирования и установки модуля SELinux использовал утилиту audit2allow, перенаправив на её stdin лог SELinux:
+Для формирования и установки модуля SELinux использовал утилиту `audit2allow`, перенаправив на её stdin лог SELinux:
 
 ```
 [root@selinuxaudit2allow -M my_nginx_service < /var/log/audit/audit.log
@@ -69,4 +69,5 @@ semodule -i my_nginx_service.pp
 
 ![6](screenshots/6.png)
 
-11
+___
+#Задача 2 - Обеспечить работоспособность приложения при включенном selinux.

@@ -22,3 +22,21 @@ C помощью переключателя `setsebool` командой `setseb
 
 Вернул значение переключателя `nis_enabled` и перезапустил nginx. Убедился что он не запускается.
 ![3](screenshots/3.png)
+
+Вывел список разрешенных SELinux'ом портов для типа http_port_t:
+
+```
+[root@selinux ~]# semanage port -l | grep -w http_port_t
+http_port_t                    tcp      80, 81, 443, 488, 8008, 8009, 8443, 9000
+```
+
+Видно, что порта 8888 в списке нет. Добавил его:
+
+```
+[root@selinux ~]# semanage port -l | grep -w http_port_t
+http_port_t                    tcp      8888, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+```
+
+Перезапустил nginx и проверил
+
+![4](screenshots/4.png)

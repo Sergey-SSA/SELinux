@@ -92,3 +92,13 @@ ___
 [root@client ~]# 
 
 ```
+Вывод утилиты `sealert`
+
+>sealert -a /var/log/audit/audit.log
+
+```
+[root@client ~]# sealert -a /var/log/audit/audit.log
+100% done
+found 0 alerts in /var/log/audit/audit.log
+[root@client ~]# 
+```

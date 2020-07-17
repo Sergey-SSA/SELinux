@@ -82,3 +82,13 @@ ___
 >[vagrant@client ~]$ nsupdate -k /etc/named.zonetransfer.key
 
 ![7](screenshots/7.png)
+
+Проверил ошибки в логе SELinux:
+
+>cat /var/log/audit/audit.log | grep denied
+
+```
+[root@client ~]# cat /var/log/audit/audit.log | grep denied
+[root@client ~]# 
+
+```

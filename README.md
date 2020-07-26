@@ -88,17 +88,66 @@ ___
 >cat /var/log/audit/audit.log | grep denied
 
 ```
-[root@client ~]# cat /var/log/audit/audit.log | grep denied
+oem@sur:~/SELinux/SELinux/dns_problems/otus-linux-adm/selinux_dns_problems$ vagrant ssh ns01
+Last login: Thu Jul 16 19:09:46 2020 from 10.0.2.2
+[vagrant@ns01 ~]$ sudo -i                                                  
+[root@ns01 ~]# cat /var/log/audit/audit.log | grep denied
+type=AVC msg=audit(1595012499.131:1103): avc:  denied  { create } for  pid=741 comm="isc-worker0000" name="named.ddns.lab.view1.jnl" scontext=system_u:system_r:named_t:s0 tcontext=system_u:object_r:etc_t:s0 tclass=file permissive=0
+type=AVC msg=audit(1595013089.522:1106): avc:  denied  { create } for  pid=741 comm="isc-worker0000" name="named.ddns.lab.view1.jnl" scontext=system_u:system_r:named_t:s0 tcontext=system_u:object_r:etc_t:s0 tclass=file permissive=0
+type=AVC msg=audit(1595013400.030:1107): avc:  denied  { create } for  pid=741 comm="isc-worker0000" name="named.ddns.lab.view1.jnl" scontext=system_u:system_r:named_t:s0 tcontext=system_u:object_r:etc_t:s0 tclass=file permissive=0
+type=AVC msg=audit(1595759146.033:710): avc:  denied  { create } for  pid=745 comm="isc-worker0000" name="named.ddns.lab.view1.jnl" scontext=system_u:system_r:named_t:s0 tcontext=system_u:object_r:etc_t:s0 tclass=file permissive=0
+type=AVC msg=audit(1595759768.325:736): avc:  denied  { create } for  pid=745 comm="isc-worker0000" name="named.ddns.lab.view1.jnl" scontext=system_u:system_r:named_t:s0 tcontext=system_u:object_r:etc_t:s0 tclass=file permissive=0
+```
+
+Из файла `/etc/named.conf` можно вяснить, расположение файла для зоны ddns.lab
+
+```
+    // labs ddns zone
+    zone "ddns.lab" {
+        type master;
+        allow-transfer { key "zonetransfer.key"; };
+        allow-update { key "zonetransfer.key"; };
+        file "/etc/named/dynamic/named.ddns.lab";
+```
+
+Просмотр файла с ключём `-Z` покажет контекст безопасности
+
+```
+[root@ns01 ~]# ll -Z /etc/named/dynamic/named.ddns.lab.view1
+-rw-rw----. named named system_u:object_r:etc_t:s0       /etc/named/dynamic/named.ddns.lab.view1
+```
+
+Тип контекста безопасности - `etc_t`.
+Для решения задачи необходимо тип поменять на `named_cache_t`.
+
+```
+[root@ns01 ~]# semanage fcontext -a -t named_cache_t '/etc/named/dynamic(/.*)?'
+[root@ns01 ~]# restorecon -R -v /etc/named/dynamic/
+restorecon reset /etc/named/dynamic context unconfined_u:object_r:etc_t:s0->unconfined_u:object_r:named_cache_t:s0
+restorecon reset /etc/named/dynamic/named.ddns.lab context system_u:object_r:etc_t:s0->system_u:object_r:named_cache_t:s0
+restorecon reset /etc/named/dynamic/named.ddns.lab.view1 context system_u:object_r:etc_t:s0->system_u:object_r:named_cache_t:s0
+```
+
+После чего можно повторить попытку обновления зоны ddns.lab.
+
+```
+[vagrant@client ~]$ sudo -i
+[root@client ~]# nsupdate -k /etc/named.zonetransfer.key
+> server 192.168.50.10
+> zone ddns.lab
+> update add www.ddns.lab. 60 A 192.168.50.15
+> send
+update failed: SERVFAIL
+> quit
+[root@client ~]# nsupdate -k /etc/named.zonetransfer.key
+> server 192.168.50.10
+> zone ddns.lab
+> update add www.ddns.lab. 60 A 192.168.50.15
+> send
+> quit
 [root@client ~]# 
-
 ```
-Вывод утилиты `sealert`
 
->sealert -a /var/log/audit/audit.log
+Ошибки больше нет.
 
-```
-[root@client ~]# sealert -a /var/log/audit/audit.log
-100% done
-found 0 alerts in /var/log/audit/audit.log
-[root@client ~]# 
-```
+![8](screenshots/8.png)
